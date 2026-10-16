@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# PyInstaller 打包中间产物 (产物本身在 dist/, 需要提交)
+tools/pyi-work/
+tools/*.spec
+tools/launcher_base.exe
+tools/payload.zip
+build/
+
+# 运行时解压出来的运行库 (首次运行自动生成)
+dist/PortKing/
+PortKing-data/
+PortKing/
+launcher.log
+.version
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# 本地临时文件
+*.log
+*.tmp

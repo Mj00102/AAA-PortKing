@@ -1,0 +1,44 @@
+name: tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.9", "3.12" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 语法检查
+        run: |
+          python -m py_compile portking.py
+          python -m py_compile test_portking.py
+          python -m py_compile tools/sync_github.py
+          python -m py_compile tools/make_onefile.py
+          python -m py_compile tools/make_icon.py
+          python -m py_compile tools/make_screenshot.py
+
+      # 这一项曾经救过命: runner 控制台是 cp1252, 打印中文会直接抛
+      # UnicodeEncodeError 让测试在第一步就挂掉 (与功能无关)。
+      - name: 编码回归 (非 UTF-8 控制台下不能崩)
+        run: python tools/test_encoding.py
+
+      - name: 运行自测 (不需要第三方依赖)
+        run: python test_portking.py
+
+      - name: 冒烟测试 GUI 能否构建
+        run: |
+          python -c "import tkinter as tk, portking as pk; pk.enable_dpi_awareness(); r=tk.Tk(); r.withdraw(); a=pk.PortPilotApp(r); r.update(); print('ports:', len(a.rows)); r.destroy()"
